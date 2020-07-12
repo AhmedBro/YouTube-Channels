@@ -1,31 +1,42 @@
-package com.example.youtubechanels.ChanelsFragments;
+package com.example.youtubechanels.Ui.ChanelsFragments;
 
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.youtubechanels.Adapters.channelsVerticalAdapter;
-import com.example.youtubechanels.Models.ChanelsModel;
+import com.example.youtubechanels.Pojo.ChanelsModel;
 import com.example.youtubechanels.R;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class HomeFragment extends Fragment implements channelsVerticalAdapter.onclick {
     View view;
-    RecyclerView mRecyclerView;
-    ArrayList<ChanelsModel> mYoutubeVideos = new ArrayList<>();
+
+    Unbinder unbinder;
+    DataViewModel chanelViewModel;
+    static ArrayList<ChanelsModel> mYoutubeVideos = new ArrayList<>();
+    @BindView(R.id.recyclerView)
+    public RecyclerView mRecyclerView;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -36,38 +47,43 @@ public class HomeFragment extends Fragment implements channelsVerticalAdapter.on
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        mRecyclerView = view.findViewById(R.id.recyclerView);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        unbinder =  ButterKnife.bind(this,view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),RecyclerView.VERTICAL,false));
+        //  mRecyclerView.setHasFixedSize(true);
 
         SetData();
 
-        channelsVerticalAdapter mChannelsVerticalAdapter = new channelsVerticalAdapter(mYoutubeVideos, this, getContext());
-
-        mRecyclerView.setAdapter(mChannelsVerticalAdapter);
-
         return view;
+    }
+
+
+    private void SetData() {
+        chanelViewModel = ViewModelProviders.of(getActivity()).get(DataViewModel.class);
+        chanelViewModel.GetHomeChannels();
+        chanelViewModel.mData.observe(getActivity(), new Observer<ArrayList<ChanelsModel>>() {
+            @Override
+            public void onChanged(ArrayList<ChanelsModel> chanelsModels) {
+
+                mYoutubeVideos = chanelsModels;
+                Log.e("eeeeeeeeee", mYoutubeVideos + "");
+                SetAdapter(mYoutubeVideos);
+
+            }
+        });
+
+    }
+
+    private void SetAdapter(ArrayList<ChanelsModel> mYoutubeVideos) {
+        channelsVerticalAdapter mChannelsVerticalAdapter = new channelsVerticalAdapter(mYoutubeVideos, this, getContext());
+        mRecyclerView.setAdapter(mChannelsVerticalAdapter);
     }
 
     private void Replace(Fragment mFragment) {
         FragmentManager mFragmentManager = getActivity().getSupportFragmentManager();
         mFragmentManager.beginTransaction().replace(R.id.replace, mFragment).commit();
-    }
-
-    private void SetData() {
-        ChanelsModel mChanelsModel = new ChanelsModel("Android Learning", R.drawable.android);
-        ChanelsModel mChanelsModel2 = new ChanelsModel("Python Learning", R.drawable.python);
-        ChanelsModel mChanelsModel3 = new ChanelsModel("Logic Design", R.drawable.logic);
-        ChanelsModel mChanelsModel4 = new ChanelsModel("Data Structure", R.drawable.data_structure);
-        ChanelsModel mChanelsModel5 = new ChanelsModel("Problem Solving", R.drawable.problem);
-
-        mYoutubeVideos.add(mChanelsModel);
-        mYoutubeVideos.add(mChanelsModel2);
-        mYoutubeVideos.add(mChanelsModel3);
-        mYoutubeVideos.add(mChanelsModel4);
-        mYoutubeVideos.add(mChanelsModel5);
     }
 
 

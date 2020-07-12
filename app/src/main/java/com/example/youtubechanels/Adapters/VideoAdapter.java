@@ -10,7 +10,7 @@ import android.webkit.WebView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.youtubechanels.Models.YouTubeVideos;
+import com.example.youtubechanels.Pojo.YouTubeVideos;
 import com.example.youtubechanels.R;
 
 import java.util.ArrayList;

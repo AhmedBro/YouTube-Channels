@@ -1,4 +1,4 @@
-package com.example.youtubechanels.Models;
+package com.example.youtubechanels.Pojo;
 
 public class ChanelsModel {
     String mName  ;
